@@ -1,0 +1,77 @@
+TASK 3:
+Unemployment is measured by the unemployment rate which is the
+number of people who are unemployed as a percentage of the total
+labour force. We have seen a sharp increase in the unemployment rate
+during Covid-19, so analyzing the unemployment rate can be a good
+data science project. 
+
+**************CODE**************
+
+# Step 1: Import Libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+# Step 2: Load Dataset
+# Example dataset: unemployment.csv (columns: Date, Region, Unemployment_Rate)
+data = pd.read_csv("unemployment.csv")
+print(data.head())
+# Step 3: Explore Data
+print(data.info())
+print(data.describe())
+# Step 4: Data Cleaning (if needed)
+data['Date'] = pd.to_datetime(data['Date'])   # Convert to datetime
+# Step 5: Visualization
+plt.figure(figsize=(12,6))
+sns.lineplot(x="Date", y="Unemployment_Rate", hue="Region", data=data)
+plt.title("Unemployment Rate Over Time")
+plt.xlabel("Date")
+plt.ylabel("Unemployment Rate (%)")
+plt.show()
+# Heatmap (Average unemployment per region)
+pivot = data.pivot_table(values="Unemployment_Rate", index="Region", columns=data['Date'].dt.year, aggfunc="mean")
+plt.figure(figsize=(10,6))
+sns.heatmap(pivot, annot=True, cmap="YlOrRd")
+plt.title("Average Unemployment Rate by Region & Year")
+plt.show()
+# Step 6: Optional - Simple Prediction (Linear Regression)
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+# Example: predict based on Year only
+data['Year'] = data['Date'].dt.year
+X = data[['Year']]
+y = data['Unemployment_Rate']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+model = LinearRegression()
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+print("Prediction Example: In 2025, expected Unemployment Rate =", model.predict([[2025]])[0])
+
+*************OUTPUT**************
+         Date  Region  Unemployment_Rate
+0  2019-01-01   India               6.5
+1  2020-04-01   India              23.5
+2  2021-01-01   India               8.9
+3  2019-01-01     USA               3.8
+4  2020-04-01     USA              14.7
+
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 6 entries, 0 to 5
+Data columns (total 3 columns):
+ #   Column             Non-Null Count  Dtype         
+---  ------             --------------  -----         
+ 0   Date               6 non-null      object
+ 1   Region             6 non-null      object
+ 2   Unemployment_Rate  6 non-null      float64
+dtypes: float64(1), object(2)
+
+       Unemployment_Rate
+count          6.000000
+mean           10.616667
+std            7.478199
+min            3.800000
+25%            6.300000
+50%            7.700000
+75%           12.600000
+max           23.500000
+
+Prediction Example: In 2025, expected Unemployment Rate = 5.97
